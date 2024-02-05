@@ -10,14 +10,14 @@ import (
 )
 
 func main() {
-	// Connect to the local NATS Server
+	// подключение к локальному NATS Server
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer nc.Close()
 
-	// Connect to NATS Streaming
+	// подключение к NATS Streaming
 	sc, err := stan.Connect("test-cluster", "test-client2", stan.NatsConn(nc))
 	if err != nil {
 		log.Fatal(err)
@@ -25,11 +25,12 @@ func main() {
 	defer sc.Close()
 
 	var jsonFile []byte
+	// генератор Json
 	jsonFile, err = turboGenerator.GenerateJSON()
 	if err != nil {
 		panic(err)
 	}
-	// Publish a message
+	// публикация сообщения
 	err = sc.Publish("hello-subject", jsonFile)
 	if err != nil {
 		log.Fatal(err)
