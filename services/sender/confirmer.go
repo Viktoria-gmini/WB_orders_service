@@ -20,6 +20,7 @@ func Confirm(data []byte, cache *cacher.Cache) error {
 	connStr := "user=postgres password=root dbname=postgres sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 	defer db.Close()

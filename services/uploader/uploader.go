@@ -78,6 +78,7 @@ func parseRowsToJSON(rows *sql.Rows, db *sql.DB) ([]byte, error) {
 	// Преобразуем список заказов в json
 	jsonData, err := json.Marshal(orders)
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 	return jsonData, nil
@@ -87,11 +88,13 @@ func itemsFromLiteral(itemsArrayLiteral []byte) ([]str.Item, error) {
 	trimmed := strings.Trim(string(itemsArrayLiteral), "{}")
 	unquoted, err := strconv.Unquote(trimmed)
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 	arrayed := "[" + unquoted + "]"
 	err = json.Unmarshal([]byte(arrayed), &itemsArray)
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 	return itemsArray, nil

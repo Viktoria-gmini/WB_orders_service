@@ -3,6 +3,7 @@ package sender
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"strconv"
 	"strings"
 
@@ -14,16 +15,19 @@ func InsertOrder(db *sql.DB, order str.Order) error {
 	var err error
 	deliveryJSON, err := json.Marshal(order.Delivery)
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 	paymentJSON, err := json.Marshal(order.Payment)
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 	var itemsArray []string
 	for _, item := range order.Items {
 		itemJSON, err := json.Marshal(item)
 		if err != nil {
+			log.Fatal(err)
 			return err
 		}
 		// Экранируем двойные кавычки внутри JSON строки.
@@ -35,6 +39,7 @@ func InsertOrder(db *sql.DB, order str.Order) error {
 	itemsArrayLiteral := "{" + strings.Join(itemsArray, ",") + "}"
 	_, err = db.Exec(query, order.OrderUID, order.TrackNumber, order.Entry, deliveryJSON, paymentJSON, itemsArrayLiteral, order.Locale, order.InternalSig, order.CustomerID, order.DeliveryService, order.Shardkey, order.SMID, order.DateCreated, order.OofShard)
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 

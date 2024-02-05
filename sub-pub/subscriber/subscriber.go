@@ -10,20 +10,22 @@ import (
 	stan "github.com/nats-io/stan.go"
 )
 
-func Subscribe() {
+var cache *cacher.Cache
+
+func Subscribe(myCache *cacher.Cache) {
 	sc, err := stan.Connect("test-cluster", "test-client")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cache := cacher.New(0, 0)
-
 	defer sc.Close()
+	cache = myCache
+	cache.UploadFromDB()
+
 	sc.Subscribe("hello-subject", func(msg *stan.Msg) {
 		fmt.Printf("Got: %s\n", string(msg.Data))
 		err = sender.Confirm(msg.Data, cache)
 		if err != nil {
-			fmt.Println("2")
-			panic(err)
+			log.Fatal(err)
 		}
 		fmt.Println("Already in database! Congratulations")
 	})

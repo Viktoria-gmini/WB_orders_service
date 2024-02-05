@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"sync"
 	"time"
 
@@ -32,9 +33,6 @@ func New(defaultExpiration, cleanupInterval time.Duration) *Cache {
 		defaultExpiration: defaultExpiration,
 		cleanupInterval:   cleanupInterval,
 	}
-	//выгружаем бд
-	data := uploader.Upload()
-	cache.UploadFromDB(data)
 
 	// Если интервал очистки больше 0, запускаем GC (удаление устаревших элементов)
 	if cleanupInterval > 0 {
@@ -48,6 +46,7 @@ func (c *Cache) Set(key string, value []byte, duration time.Duration) error {
 	var order str.Order
 	err := json.Unmarshal(value, &order)
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 	// Если продолжительность жизни равна 0 - используется значение по-умолчанию
@@ -163,8 +162,10 @@ func (c *Cache) clearItems(keys []string) {
 		delete(c.items, k)
 	}
 }
-func (c *Cache) UploadFromDB(data []byte) error {
+func (c *Cache) UploadFromDB() error {
 	var orders []str.Order
+	//выгружаем бд
+	data := uploader.Upload()
 	err := json.Unmarshal(data, &orders)
 	if err != nil {
 		return errors.New("cache can't access db")

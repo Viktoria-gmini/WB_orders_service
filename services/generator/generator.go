@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -81,6 +82,7 @@ func GenerateJSON() ([]byte, error) {
 
 	jsonData, err := json.Marshal(order)
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 
